@@ -49,7 +49,7 @@ for originalObject in jsonData["results"].keys():
 
 for chosenShapeDescriptor in shapeDescriptors.keys():
     df = pd.DataFrame({"category": [int(test["category"]) if test["category"].isdigit() else test["category"] for test in shapeDescriptors.get(chosenShapeDescriptor)], 
-                           "averageDistance":  [test["avgDis"] for test in shapeDescriptors.get(chosenShapeDescriptor)]})
+                        "averageDistance":  [test["avgDis"] for test in shapeDescriptors.get(chosenShapeDescriptor)]})
     dfMean = df.groupby('category')['averageDistance'].mean()
     dfMean = dfMean.to_frame().reset_index()
 
@@ -60,12 +60,33 @@ for chosenShapeDescriptor in shapeDescriptors.keys():
     
     # Need this as the 5.1-15.0 category is sorted in the wrong order
     if datasetName == "OverlappingObjects":
-        overlappingCategories = pd.CategoricalDtype(['5.1-15.0', '15.1-25.0', '25.1-35.0', '35.1-45.0', '45.1-55.0', '55.1-65.0', '65.1-75.0', '75.1-85.0', '85.1-95.1'], ordered=True)
+        overlappingCategories = pd.CategoricalDtype(['0', '5.1-15.0', '15.1-25.0', '25.1-35.0', '35.1-45.0', '45.1-55.0', '55.1-65.0', '65.1-75.0', '75.1-85.0', '85.1-95.1'], ordered=True)
         dfMean['category'] = dfMean['category'].astype(overlappingCategories)
         dfStdDevMean['category'] = dfMean['category'].astype(overlappingCategories)
 
+    if datasetName == "RotatedObjectsDatset":
+        rotatedCategories = pd.CategoricalDtype(['0', 'X', 'Y', 'Z', 'XYZ'], ordered=True)
+        dfMean['category'] = dfMean['category'].astype(rotatedCategories)
+        dfStdDevMean['category'] = dfMean['category'].astype(rotatedCategories)
+
+
+    startDistance = 0
+    if chosenShapeDescriptor == "SI":
+        startDistance = 1
+
     dfMean.sort_values(by=["category"], inplace=True)
     dfStdDevMean.sort_values(by=["category"], inplace=True)
+
+    # We have already done the noiseroof tests, and found out that the shape descriptors
+    # are capable of getting a perfect score when two equal objects are compared.
+    newMeanRow = {"category": 0, "averageDistance": startDistance}
+    dfMean = pd.concat([pd.DataFrame(newMeanRow, index=[0]), dfMean], ignore_index=True).reset_index(drop=True)
+
+    newStdRow = {"category": 0, "stdDeviation": 0}
+    dfStdDevMean = pd.concat([pd.DataFrame(newStdRow, index=[0]), dfStdDevMean], ignore_index=True).reset_index(drop=True)
+
+    # dfMean["category"] = dfMean["category"].astype(str)
+    # dfStdDevMean["category"] = dfStdDevMean["category"].astype(str)
 
     plt.figure().set_figwidth(10)
     plt.title(chosenShapeDescriptor +' - ' + datasetName, fontstyle='italic')

@@ -72,6 +72,8 @@ for chosenShapeDescriptor in shapeDescriptors.keys():
         plt.figure().set_figwidth(10)
         plt.title(chosenShapeDescriptor +' - ' + datasetName + ' - ' + category, fontstyle='italic')
 
+        print("Category: " + category + ", " + "Shape Descriptor: " + chosenShapeDescriptor + ", " + "Mean distance: " + str(df["averageDistance"].mean()))
+
         plt.plot('averageDistance', data=df, linestyle="none", marker='o', markersize=2, color=colours[chosenShapeDescriptor], label="Average Distance")
         plt.plot('stdDeviation', data=dfStdDev, linestyle="none", marker='o', markersize=2, color="tab:green", label="Average Standard Deviation")
         plt.axhline(y=stdDev[chosenShapeDescriptor], color="tab:red", linewidth=3, linestyle="dotted", label="Standard Deviation Boundary")
@@ -79,6 +81,8 @@ for chosenShapeDescriptor in shapeDescriptors.keys():
 
         plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12),
                   fancybox=True, shadow=True, ncol=5, fontsize='small')
+
+        plt.yscale('log')
 
         plt.margins(0)
         plt.tight_layout()

@@ -43,41 +43,49 @@ for originalObject in jsonData["results"].keys():
                     shapeDescriptors.get(shapeDescriptor).append({
                         "object": int(originalObject),
                         "comparisonTime": jsonData["results"][originalObject][dataset][shapeDescriptor][category][distanceFunction]["time"],
-                        "vertexCount": jsonData["results"][originalObject][dataset][shapeDescriptor][category][distanceFunction]["objectData"]["originalFaceCount"]}
+                        "vertexCount": jsonData["results"][originalObject][dataset][shapeDescriptor][category][distanceFunction]["objectData"]["comparisonFaceCount"]}
                     )
 
-dfRICI = pd.DataFrame({"comparisonTime": [test["comparisonTime"] for test in shapeDescriptors.get("RICI")],
-                        "vertexCount": [test["vertexCount"] for test in shapeDescriptors.get("RICI")]})
-dfRICI.sort_values(by=["comparisonTime"], inplace=True)
+dfRICI = pd.DataFrame({"id": [test["object"] for test in shapeDescriptors.get("RICI")],
+                        "comparisonTime": [test["comparisonTime"] for test in shapeDescriptors.get("RICI")],
+                        "vertexCount": [test["vertexCount"] 
+                        for test in shapeDescriptors.get("RICI")]})
+dfRICI = dfRICI.groupby(['id', 'vertexCount'])['comparisonTime'].mean()
+dfRICI = dfRICI.to_frame().reset_index()
+dfRICI.sort_values(by=["vertexCount"], inplace=True)
 dfRICI = dfRICI.reset_index(drop=True)
 
 print("RICI Mean: " + str(dfRICI["comparisonTime"].mean()))
 
-dfQUICCI = pd.DataFrame({"comparisonTime": [test["comparisonTime"] for test in shapeDescriptors.get("QUICCI")],
+dfQUICCI = pd.DataFrame({"id": [test["object"] for test in shapeDescriptors.get("QUICCI")],
+                        "comparisonTime": [test["comparisonTime"] for test in shapeDescriptors.get("QUICCI")],
                         "vertexCount": [test["vertexCount"] for test in shapeDescriptors.get("QUICCI")]})
-dfQUICCI.sort_values(by=["comparisonTime"], inplace=True)
-dfQUICCI = dfQUICCI.reset_index(drop=True)
+dfQUICCI = dfQUICCI.groupby(['id', 'vertexCount'])['comparisonTime'].mean()
+dfQUICCI = dfQUICCI.to_frame().reset_index()
 
 print("QUICCI Mean: " + str(dfQUICCI["comparisonTime"].mean()))
 
-dfSI = pd.DataFrame({"comparisonTime": [test["comparisonTime"] for test in shapeDescriptors.get("SI")],
+dfSI = pd.DataFrame({"id": [test["object"] for test in shapeDescriptors.get("SI")],
+                    "comparisonTime": [test["comparisonTime"] for test in shapeDescriptors.get("SI")],
                     "vertexCount": [test["vertexCount"] for test in shapeDescriptors.get("SI")]})
-dfSI.sort_values(by=["comparisonTime"], inplace=True)
-dfSI = dfSI.reset_index(drop=True)
+dfSI = dfSI.groupby(['id', 'vertexCount'])['comparisonTime'].mean()
+dfSI = dfSI.to_frame().reset_index()
 
 print("SI Mean: " + str(dfSI["comparisonTime"].mean()))
 
-df3DSC = pd.DataFrame({"comparisonTime": [test["comparisonTime"] for test in shapeDescriptors.get("3DSC")],    
+df3DSC = pd.DataFrame({"id": [test["object"] for test in shapeDescriptors.get("3DSC")],
+                        "comparisonTime": [test["comparisonTime"] for test in shapeDescriptors.get("3DSC")],    
                         "vertexCount": [test["vertexCount"] for test in shapeDescriptors.get("3DSC")]})
-df3DSC.sort_values(by=["comparisonTime"], inplace=True)
-df3DSC = df3DSC.reset_index(drop=True)
+df3DSC = df3DSC.groupby(['id', 'vertexCount'])['comparisonTime'].mean()
+df3DSC = df3DSC.to_frame().reset_index()
 
 print("3DSC Mean: " + str(df3DSC["comparisonTime"].mean()))
 
-dfFPFH = pd.DataFrame({"comparisonTime": [test["comparisonTime"] for test in shapeDescriptors.get("FPFH")],
+dfFPFH = pd.DataFrame({"id": [test["object"] for test in shapeDescriptors.get("FPFH")],
+                        "comparisonTime": [test["comparisonTime"] for test in shapeDescriptors.get("FPFH")],
                         "vertexCount": [test["vertexCount"] for test in shapeDescriptors.get("FPFH")]})
-dfFPFH.sort_values(by=["comparisonTime"], inplace=True)
-dfFPFH = dfFPFH.reset_index(drop=True)
+dfFPFH = dfFPFH.groupby(['id', 'vertexCount'])['comparisonTime'].mean()
+dfFPFH = dfFPFH.to_frame().reset_index()
 
 print("FPFH Mean: " + str(dfFPFH["comparisonTime"].mean()))
 
@@ -87,10 +95,10 @@ plt.xlabel("Object #")
 plt.ylabel("Comparsion Time (s)")
 
 plt.plot(dfRICI["comparisonTime"], color=colours.get("RICI"), label="RICI", linestyle="none", marker="o", markersize=2)
-plt.plot(dfQUICCI["comparisonTime"], color=colours.get("QUICCI"), label="QUICCI", linestyle="none", marker="o", markersize=2)
-plt.plot(dfSI["comparisonTime"], color=colours.get("SI"), label="SI", linestyle="none", marker="o", markersize=2)
-plt.plot(df3DSC["comparisonTime"], color=colours.get("3DSC"), label="3DSC", linestyle="none", marker="o", markersize=2)
-plt.plot(dfFPFH["comparisonTime"], color=colours.get("FPFH"), label="FPFH", linestyle="none", marker="o", markersize=2)
+# plt.plot(dfQUICCI["comparisonTime"], color=colours.get("QUICCI"), label="QUICCI", linestyle="none", marker="o", markersize=2)
+# plt.plot(dfSI["comparisonTime"], color=colours.get("SI"), label="SI", linestyle="none", marker="o", markersize=2)
+# plt.plot(df3DSC["comparisonTime"], color=colours.get("3DSC"), label="3DSC", linestyle="none", marker="o", markersize=2)
+# plt.plot(dfFPFH["comparisonTime"], color=colours.get("FPFH"), label="FPFH", linestyle="none", marker="o", markersize=2)
 
 plt.margins(0)
 plt.tight_layout()
