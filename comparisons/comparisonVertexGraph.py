@@ -56,38 +56,40 @@ for chosenShapeDescriptor in shapeDescriptors.keys():
     for category in categories:
         df = pd.DataFrame({"averageDistance": [test["avgDis"] for test in shapeDescriptors.get(chosenShapeDescriptor)],
                                "vertexCount": [test["vertexCount"] for test in shapeDescriptors.get(chosenShapeDescriptor)],
-                               "category": [test["category"] for test in shapeDescriptors.get(chosenShapeDescriptor)]})
-        df.sort_values(by=["vertexCount"], inplace=True)
+                               "category": [test["category"] for test in shapeDescriptors.get(chosenShapeDescriptor)],
+                               "stdDeviation": [test["stdDev"] for test in shapeDescriptors.get(chosenShapeDescriptor)]})
+        df.sort_values(by=["averageDistance"], inplace=True)
         df = df.reset_index(drop=True)
 
         dfStdDev = pd.DataFrame({"stdDeviation":  [test["stdDev"] for test in shapeDescriptors.get(chosenShapeDescriptor)],
                                "vertexCount": [test["vertexCount"] for test in shapeDescriptors.get(chosenShapeDescriptor)],
                                "category": [test["category"] for test in shapeDescriptors.get(chosenShapeDescriptor)]})
-        dfStdDev.sort_values(by=["vertexCount"], inplace=True)
+        dfStdDev.sort_values(by=["stdDeviation"], inplace=True)
         dfStdDev = dfStdDev.reset_index(drop=True)
 
         df.drop(df[df.category != category].index, inplace=True)
         dfStdDev.drop(dfStdDev[dfStdDev.category != category].index, inplace=True)
 
         plt.figure().set_figwidth(10)
+        plt.rcParams['font.size'] = 14
         plt.title(chosenShapeDescriptor +' - ' + datasetName + ' - ' + category, fontstyle='italic')
 
         print("Category: " + category + ", " + "Shape Descriptor: " + chosenShapeDescriptor + ", " + "Mean distance: " + str(df["averageDistance"].mean()))
 
         plt.plot('averageDistance', data=df, linestyle="none", marker='o', markersize=2, color=colours[chosenShapeDescriptor], label="Average Distance")
-        plt.plot('stdDeviation', data=dfStdDev, linestyle="none", marker='o', markersize=2, color="tab:green", label="Average Standard Deviation")
+        plt.plot('stdDeviation', data=df, linestyle="none", marker='o', markersize=2, color="tab:green", label="Average Standard Deviation")
         plt.axhline(y=stdDev[chosenShapeDescriptor], color="tab:red", linewidth=3, linestyle="dotted", label="Standard Deviation Boundary")
         plt.axhline(y=noise[chosenShapeDescriptor], color="tab:cyan", linewidth=3, linestyle="dotted", label="Poor Performance Matching Boundary")
-
-        plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12),
-                  fancybox=True, shadow=True, ncol=5, fontsize='small')
-
-        plt.yscale('log')
+        
+        plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.18),
+              fancybox=True, shadow=True, ncol=2)
+    
+        # plt.yscale('log')
 
         plt.margins(0)
         plt.tight_layout()
 
-        plt.xlabel("Object #")
+        plt.xlabel("Object Index")
         plt.ylabel("Distance")
 
         folderPath = "imagesVertex/" + datasetName + "/"

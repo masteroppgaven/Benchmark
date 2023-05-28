@@ -83,7 +83,7 @@ print("FPFH Mean: " + str(dfFPFH["generationTime"].mean()))
 
 plt.figure().set_figwidth(10)
 plt.title("Generation Time Comparison", fontstyle='italic')
-plt.xlabel("Object #")
+plt.xlabel("Object Index")
 plt.ylabel("Generation Time (s)")
 
 plt.plot(dfRICI["generationTime"], color=colours.get("RICI"), label="RICI")

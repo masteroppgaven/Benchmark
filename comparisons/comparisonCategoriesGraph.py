@@ -48,7 +48,7 @@ for originalObject in jsonData["results"].keys():
                     )
 
 for chosenShapeDescriptor in shapeDescriptors.keys():
-    df = pd.DataFrame({"category": [int(test["category"]) if test["category"].isdigit() else test["category"] for test in shapeDescriptors.get(chosenShapeDescriptor)], 
+    df = pd.DataFrame({"category":[int(test["category"]) if test["category"].isdigit() else test["category"] for test in shapeDescriptors.get(chosenShapeDescriptor)], 
                         "averageDistance":  [test["avgDis"] for test in shapeDescriptors.get(chosenShapeDescriptor)]})
     dfMean = df.groupby('category')['averageDistance'].mean()
     dfMean = dfMean.to_frame().reset_index()
@@ -69,6 +69,11 @@ for chosenShapeDescriptor in shapeDescriptors.keys():
         dfMean['category'] = dfMean['category'].astype(rotatedCategories)
         dfStdDevMean['category'] = dfMean['category'].astype(rotatedCategories)
 
+    if datasetName == "MovedObjectsDataset":
+        rotatedCategories = pd.CategoricalDtype(['0', 'SmallMove-0.2f', 'BigMove-10.0f'], ordered=True)
+        dfMean['category'] = dfMean['category'].astype(rotatedCategories)
+        dfStdDevMean['category'] = dfMean['category'].astype(rotatedCategories)
+
 
     startDistance = 0
     if chosenShapeDescriptor == "SI":
@@ -85,10 +90,12 @@ for chosenShapeDescriptor in shapeDescriptors.keys():
     newStdRow = {"category": 0, "stdDeviation": 0}
     dfStdDevMean = pd.concat([pd.DataFrame(newStdRow, index=[0]), dfStdDevMean], ignore_index=True).reset_index(drop=True)
 
-    # dfMean["category"] = dfMean["category"].astype(str)
-    # dfStdDevMean["category"] = dfStdDevMean["category"].astype(str)
+    dfMean["category"] = dfMean["category"].astype(str)
+    dfStdDevMean["category"] = dfStdDevMean["category"].astype(str)
 
     plt.figure().set_figwidth(10)
+    plt.rcParams['font.size'] = 14
+    plt.xticks(fontsize=12)
     plt.title(chosenShapeDescriptor +' - ' + datasetName, fontstyle='italic')
 
     plt.plot('category', 'averageDistance', data=dfMean, marker='o', markersize=2, linewidth=2, color=colours[chosenShapeDescriptor], label="Average Distance")
@@ -99,8 +106,8 @@ for chosenShapeDescriptor in shapeDescriptors.keys():
 
     plt.xticks(dfMean['category'])
 
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12),
-              fancybox=True, shadow=True, ncol=5, fontsize='small')
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.18),
+              fancybox=True, shadow=True, ncol=2)
     
     plt.ylim(bottom=0)
 
@@ -108,7 +115,7 @@ for chosenShapeDescriptor in shapeDescriptors.keys():
     plt.tight_layout()
     plt.grid()
 
-    plt.xlabel("Category")
+    plt.xlabel("Degree of Holes")
     plt.ylabel("Distance")
 
     folderPath = "imagesCategories/" + datasetName + "/"
